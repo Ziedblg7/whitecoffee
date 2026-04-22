@@ -20,7 +20,7 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-background/80 backdrop-blur-xl">
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
         <Link to="/" className="flex items-center gap-3" onClick={() => setOpen(false)}>
-          <img src={logo} alt="White Coffee House Restaurant" width={120} height={56} className="h-12 w-auto object-contain" />
+          <img src={logo} alt="White Coffee House Restaurant" className="h-14 w-auto object-contain md:h-16" />
         </Link>
 
         <nav className="hidden items-center gap-8 lg:flex">
