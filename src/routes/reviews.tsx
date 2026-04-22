@@ -95,10 +95,21 @@ function ReviewsPage() {
         subtitle="Real stories from the wonderful people who share our tables."
       />
       <section className="mx-auto max-w-7xl px-6 py-20">
-        <div className="mb-14 flex flex-wrap items-center justify-center gap-3">
-          <Stars n={5} size={22} />
-          <span className="font-display text-2xl text-primary">5.0 / 5</span>
-          <span className="text-sm text-muted-foreground">· based on guest reviews</span>
+        <div className="mb-14 grid gap-6 md:grid-cols-3">
+          <div className="rounded-3xl border border-border/60 bg-card p-7 text-center shadow-[var(--shadow-card)]">
+            <div className="flex justify-center"><Stars n={5} size={22} /></div>
+            <div className="mt-3 font-display text-3xl text-primary">5.0 / 5</div>
+            <div className="mt-1 text-xs uppercase tracking-wider text-muted-foreground">Average rating</div>
+          </div>
+          <div className="rounded-3xl border border-border/60 bg-primary p-7 text-center text-primary-foreground shadow-[var(--shadow-elegant)]">
+            <ThumbsUp size={28} className="mx-auto" />
+            <div className="mt-3 font-display text-4xl">90%</div>
+            <div className="mt-1 text-xs uppercase tracking-wider text-primary-foreground/80">Recommended</div>
+          </div>
+          <div className="rounded-3xl border border-border/60 bg-card p-7 text-center shadow-[var(--shadow-card)]">
+            <div className="font-display text-4xl text-primary">231</div>
+            <div className="mt-1 text-xs uppercase tracking-wider text-muted-foreground">Guest opinions</div>
+          </div>
         </div>
 
         <div className="grid gap-7 md:grid-cols-2">
