@@ -30,7 +30,6 @@ function MenuPage() {
     const next = (index + menu.length) % menu.length;
     setActiveId(menu[next].id);
     tabRefs.current[next]?.focus();
-    tabRefs.current[next]?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
   };
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>, index: number) => {
@@ -62,13 +61,13 @@ function MenuPage() {
         subtitle="Choose a category to explore — each section stands on its own."
       />
 
-      {/* Category tabs */}
+      {/* Category tabs — wraps onto multiple rows; no horizontal swipe */}
       <div className="sticky top-20 z-30 border-b border-border/60 bg-background/90 backdrop-blur-xl">
         <div
           role="tablist"
           aria-label="Menu categories"
           aria-orientation="horizontal"
-          className="mx-auto flex max-w-7xl gap-2 overflow-x-auto px-4 py-3 md:px-6 [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="mx-auto flex max-w-7xl flex-wrap justify-center gap-2 overflow-hidden overscroll-x-none px-4 py-3 md:justify-start md:px-6 [touch-action:pan-y]"
         >
           {menu.map((c, i) => {
             const active = c.id === activeId;
@@ -84,7 +83,7 @@ function MenuPage() {
                 tabIndex={active ? 0 : -1}
                 onClick={() => setActiveId(c.id)}
                 onKeyDown={(e) => onKeyDown(e, i)}
-                className={`flex min-h-12 shrink-0 touch-manipulation items-center gap-2 rounded-full border px-5 py-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
+                className={`flex min-h-12 touch-manipulation items-center gap-2 rounded-full border px-5 py-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:border-accent ${
                   active
                     ? "border-primary bg-primary text-primary-foreground shadow-[var(--shadow-card)]"
                     : "border-border bg-card text-foreground/70 hover:border-primary hover:text-primary active:bg-primary-soft"
