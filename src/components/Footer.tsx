@@ -50,7 +50,7 @@ export function Footer() {
         <div>
           <h4 className="text-sm font-semibold uppercase tracking-wider text-primary">Scan & Visit</h4>
           <div className="mt-4 inline-flex flex-col items-center rounded-2xl border border-border/60 bg-background p-3 shadow-[var(--shadow-card)]">
-            <QRCodeSVG value={siteUrl} size={104} bgColor="transparent" fgColor="hsl(var(--primary))" level="M" />
+            <QRCodeSVG value={siteUrl} size={104} bgColor="#ffffff" fgColor="#1e3a8a" level="M" />
             <span className="mt-2 text-[10px] uppercase tracking-wider text-muted-foreground">Visit our site</span>
           </div>
         </div>
