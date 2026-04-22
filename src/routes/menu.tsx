@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { ImagePlus, Pencil, Plus, Trash2, X } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { PageHero } from "@/components/PageHero";
 import { menu as defaultMenu, type MenuCategory, type MenuItem } from "@/data/menu";
@@ -67,7 +67,37 @@ function loadCustomItems(): CustomItems {
 
 function saveCustomItems(items: CustomItems) {
   if (typeof window === "undefined") return;
-  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+  try {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+  } catch {
+    toast.error("Storage is full. Try a smaller image.");
+  }
+}
+
+// Read a File, draw it to a canvas at maxSize on the long edge, return JPEG data URL.
+function resizeImageToDataUrl(file: File, maxSize = 480): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error("read error"));
+    reader.onload = () => {
+      const img = new Image();
+      img.onerror = () => reject(new Error("decode error"));
+      img.onload = () => {
+        const ratio = Math.min(1, maxSize / Math.max(img.width, img.height));
+        const w = Math.round(img.width * ratio);
+        const h = Math.round(img.height * ratio);
+        const canvas = document.createElement("canvas");
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return reject(new Error("no canvas"));
+        ctx.drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL("image/jpeg", 0.82));
+      };
+      img.src = reader.result as string;
+    };
+    reader.readAsDataURL(file);
+  });
 }
 
 type MergedItem = MenuItem & { custom: boolean; customIndex?: number };
@@ -79,6 +109,7 @@ function MenuPage() {
   const [categoryId, setCategoryId] = useState<string>(defaultMenu[0]?.id ?? "");
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
+  const [image, setImage] = useState<string | undefined>(undefined);
   // When editing, track which custom item we're editing
   const [editing, setEditing] = useState<{ categoryId: string; index: number } | null>(null);
   // Pending deletion confirmation
@@ -99,8 +130,26 @@ function MenuPage() {
   const resetForm = () => {
     setName("");
     setPrice("");
+    setImage(undefined);
     setEditing(null);
     setCategoryId(defaultMenu[0]?.id ?? "");
+  };
+
+  const handleImageFile = async (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please pick an image file.");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image must be under 5 MB.");
+      return;
+    }
+    try {
+      const dataUrl = await resizeImageToDataUrl(file, 480);
+      setImage(dataUrl);
+    } catch {
+      toast.error("Couldn't read that image.");
+    }
   };
 
   const openAdd = () => {
@@ -115,6 +164,7 @@ function MenuPage() {
     setCategoryId(catId);
     setName(item.name);
     setPrice(String(item.price));
+    setImage(item.image);
     setFormOpen(true);
   };
 
@@ -127,24 +177,25 @@ function MenuPage() {
       return;
     }
 
+    const newItem: MenuItem = { name: trimmedName, price: parsedPrice, ...(image ? { image } : {}) };
     let next: CustomItems;
     if (editing) {
       // If category changed, remove from old then append to new
       if (editing.categoryId !== categoryId) {
         const oldList = [...(customItems[editing.categoryId] ?? [])];
         oldList.splice(editing.index, 1);
-        const newList = [...(customItems[categoryId] ?? []), { name: trimmedName, price: parsedPrice }];
+        const newList = [...(customItems[categoryId] ?? []), newItem];
         next = { ...customItems, [editing.categoryId]: oldList, [categoryId]: newList };
       } else {
         const list = [...(customItems[categoryId] ?? [])];
-        list[editing.index] = { name: trimmedName, price: parsedPrice };
+        list[editing.index] = newItem;
         next = { ...customItems, [categoryId]: list };
       }
       toast.success(`Updated "${trimmedName}".`);
     } else {
       next = {
         ...customItems,
-        [categoryId]: [...(customItems[categoryId] ?? []), { name: trimmedName, price: parsedPrice }],
+        [categoryId]: [...(customItems[categoryId] ?? []), newItem],
       };
       toast.success(`Added "${trimmedName}" to the menu.`);
     }
@@ -228,16 +279,24 @@ function MenuPage() {
                   {cat.items.map((item) => (
                     <li
                       key={`${item.custom ? "c" : "d"}-${item.name}-${item.customIndex ?? ""}`}
-                      className="flex items-baseline gap-3 py-3"
+                      className="flex items-center gap-3 py-3"
                     >
+                      {item.image && (
+                        <img
+                          src={item.image}
+                          alt=""
+                          loading="lazy"
+                          className="h-10 w-10 shrink-0 rounded-lg object-cover ring-1 ring-border/60"
+                        />
+                      )}
                       <span className="flex-1 text-sm text-foreground md:text-base">{item.name}</span>
-                      <span className="hidden flex-1 translate-y-[-3px] border-b border-dotted border-border sm:block" />
+                      <span className="hidden flex-1 translate-y-[-3px] self-end border-b border-dotted border-border sm:block" />
                       <span className="shrink-0 text-right font-display text-base font-semibold text-primary md:text-lg">
                         {item.price}
                         <span className="ml-1 text-[10px] font-normal uppercase tracking-wider text-muted-foreground">TND</span>
                       </span>
                       {item.custom && item.customIndex !== undefined && (
-                        <span className="ml-1 flex shrink-0 items-center gap-1 self-center">
+                        <span className="ml-1 flex shrink-0 items-center gap-1">
                           <Button
                             type="button"
                             variant="ghost"
@@ -337,6 +396,48 @@ function MenuPage() {
                 placeholder="e.g. 8.5"
                 required
               />
+            </div>
+            <div className="space-y-2">
+              <Label>Photo (optional)</Label>
+              <div className="flex items-center gap-3">
+                <div className="relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-dashed border-border bg-muted/40">
+                  {image ? (
+                    <>
+                      <img src={image} alt="" className="h-full w-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => setImage(undefined)}
+                        aria-label="Remove image"
+                        className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-background/90 text-foreground shadow ring-1 ring-border transition hover:text-destructive"
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </button>
+                    </>
+                  ) : (
+                    <ImagePlus className="h-6 w-6 text-muted-foreground" aria-hidden="true" />
+                  )}
+                </div>
+                <div className="flex-1">
+                  <Label
+                    htmlFor="item-image"
+                    className="inline-flex h-9 cursor-pointer items-center justify-center rounded-md border border-input bg-background px-3 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground"
+                  >
+                    {image ? "Change photo" : "Upload photo"}
+                  </Label>
+                  <Input
+                    id="item-image"
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (f) void handleImageFile(f);
+                      e.target.value = "";
+                    }}
+                  />
+                  <p className="mt-1 text-xs text-muted-foreground">PNG or JPG, up to 5 MB.</p>
+                </div>
+              </div>
             </div>
             <DialogFooter className="gap-2 sm:gap-0">
               <Button type="button" variant="outline" onClick={() => setFormOpen(false)}>

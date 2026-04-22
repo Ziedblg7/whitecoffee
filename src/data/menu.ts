@@ -9,6 +9,7 @@ import snacksImg from "@/assets/photo-pasta.jpg";
 export interface MenuItem {
   name: string;
   price: number;
+  image?: string;
 }
 export interface MenuCategory {
   id: string;
