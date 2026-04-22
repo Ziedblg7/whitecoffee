@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Layout } from "@/components/Layout";
 import { PageHero } from "@/components/PageHero";
+import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
 
 export const Route = createFileRoute("/contact")({
@@ -26,6 +27,17 @@ function ContactPage() {
         subtitle="We'd love to welcome you. Send us a note and we'll reply within a few hours."
       />
       <section className="mx-auto max-w-7xl px-6 py-20">
+        {/* Quick WhatsApp reservation banner */}
+        <div className="mb-12 flex flex-col items-center justify-between gap-5 rounded-3xl border border-border/60 bg-gradient-to-r from-primary to-primary/80 p-8 text-center text-primary-foreground shadow-[var(--shadow-elegant)] md:flex-row md:text-left">
+          <div>
+            <h2 className="font-display text-2xl md:text-3xl">Reserve in seconds — chat with us on WhatsApp</h2>
+            <p className="mt-2 text-sm text-primary-foreground/85">Send us your date, time and number of guests. We'll confirm right away.</p>
+          </div>
+          <WhatsAppButton message="Hello White Coffee House! I'd like to reserve a table.">
+            Chat us on WhatsApp
+          </WhatsAppButton>
+        </div>
+
         <div className="grid gap-12 lg:grid-cols-2">
           {/* Info */}
           <div className="space-y-6">

@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import logo from "@/assets/logo-white.jpg";
+import { WhatsAppButton, WhatsAppIcon, whatsappUrl } from "./WhatsAppButton";
 
 const links = [
   { to: "/", label: "Home" },
@@ -35,20 +36,34 @@ export function Header() {
           ))}
         </nav>
 
-        <Link
-          to="/contact"
-          className="hidden rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-elegant)] lg:inline-flex"
-        >
-          Reserve a Table
-        </Link>
+        <div className="hidden items-center gap-3 lg:flex">
+          <WhatsAppButton>Chat us</WhatsAppButton>
+          <Link
+            to="/contact"
+            className="rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-elegant)]"
+          >
+            Reserve a Table
+          </Link>
+        </div>
 
-        <button
-          className="rounded-md p-2 text-primary lg:hidden"
-          onClick={() => setOpen(!open)}
-          aria-label="Toggle menu"
-        >
-          {open ? <X size={22} /> : <Menu size={22} />}
-        </button>
+        <div className="flex items-center gap-2 lg:hidden">
+          <a
+            href={whatsappUrl()}
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Chat on WhatsApp"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#25D366] text-white shadow-[var(--shadow-card)]"
+          >
+            <WhatsAppIcon size={18} />
+          </a>
+          <button
+            className="rounded-md p-2 text-primary"
+            onClick={() => setOpen(!open)}
+            aria-label="Toggle menu"
+          >
+            {open ? <X size={22} /> : <Menu size={22} />}
+          </button>
+        </div>
       </div>
 
       {open && (
