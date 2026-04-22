@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Layout } from "@/components/Layout";
 import { PageHero } from "@/components/PageHero";
 import { menu } from "@/data/menu";
@@ -22,7 +22,37 @@ export const Route = createFileRoute("/menu")({
 
 function MenuPage() {
   const [activeId, setActiveId] = useState(menu[0].id);
-  const cat = menu.find((c) => c.id === activeId) ?? menu[0];
+  const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const activeIndex = menu.findIndex((c) => c.id === activeId);
+  const cat = menu[activeIndex] ?? menu[0];
+
+  const focusTab = (index: number) => {
+    const next = (index + menu.length) % menu.length;
+    setActiveId(menu[next].id);
+    tabRefs.current[next]?.focus();
+    tabRefs.current[next]?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+  };
+
+  const onKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>, index: number) => {
+    switch (e.key) {
+      case "ArrowRight":
+        e.preventDefault();
+        focusTab(index + 1);
+        break;
+      case "ArrowLeft":
+        e.preventDefault();
+        focusTab(index - 1);
+        break;
+      case "Home":
+        e.preventDefault();
+        focusTab(0);
+        break;
+      case "End":
+        e.preventDefault();
+        focusTab(menu.length - 1);
+        break;
+    }
+  };
 
   return (
     <Layout>
@@ -33,23 +63,35 @@ function MenuPage() {
       />
 
       {/* Category tabs */}
-      <div className="sticky top-20 z-30 border-b border-border/60 bg-background/85 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl gap-2 overflow-x-auto px-6 py-3">
-          {menu.map((c) => {
+      <div className="sticky top-20 z-30 border-b border-border/60 bg-background/90 backdrop-blur-xl">
+        <div
+          role="tablist"
+          aria-label="Menu categories"
+          aria-orientation="horizontal"
+          className="mx-auto flex max-w-7xl gap-2 overflow-x-auto px-4 py-3 md:px-6 [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
+          {menu.map((c, i) => {
             const active = c.id === activeId;
             return (
               <button
                 key={c.id}
+                ref={(el) => { tabRefs.current[i] = el; }}
                 type="button"
+                role="tab"
+                id={`tab-${c.id}`}
+                aria-selected={active}
+                aria-controls={`panel-${c.id}`}
+                tabIndex={active ? 0 : -1}
                 onClick={() => setActiveId(c.id)}
-                className={`flex shrink-0 items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
+                onKeyDown={(e) => onKeyDown(e, i)}
+                className={`flex min-h-12 shrink-0 touch-manipulation items-center gap-2 rounded-full border px-5 py-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
                   active
-                    ? "border-primary bg-primary text-primary-foreground"
-                    : "border-border bg-card text-foreground/70 hover:border-primary hover:text-primary"
+                    ? "border-primary bg-primary text-primary-foreground shadow-[var(--shadow-card)]"
+                    : "border-border bg-card text-foreground/70 hover:border-primary hover:text-primary active:bg-primary-soft"
                 }`}
               >
-                <span>{c.icon}</span>
-                <span>{c.title}</span>
+                <span aria-hidden="true" className="text-base">{c.icon}</span>
+                <span className="whitespace-nowrap">{c.title}</span>
               </button>
             );
           })}
@@ -57,7 +99,12 @@ function MenuPage() {
       </div>
 
       {/* Single active category */}
-      <section className="mx-auto max-w-7xl px-6 py-16 md:py-20">
+      <section
+        className="mx-auto max-w-7xl px-6 py-16 md:py-20"
+        role="tabpanel"
+        id={`panel-${cat.id}`}
+        aria-labelledby={`tab-${cat.id}`}
+      >
         <article key={cat.id} className="grid items-center gap-10 md:grid-cols-2">
           <div className="overflow-hidden rounded-3xl shadow-[var(--shadow-elegant)]">
             <img
