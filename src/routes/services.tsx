@@ -1,27 +1,36 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Layout } from "@/components/Layout";
 import { PageHero } from "@/components/PageHero";
-import { Coffee, Utensils, Cake, Users, Wifi, Music } from "lucide-react";
+import {
+  Sun,
+  ShoppingBag,
+  Utensils,
+  Coffee,
+  Cake,
+  Laptop,
+  CalendarCheck,
+} from "lucide-react";
 
 export const Route = createFileRoute("/services")({
   head: () => ({
     meta: [
-      { title: "Services — White Coffee House Restaurant" },
-      { name: "description", content: "Dine in, takeaway, private events, catering and co-working space at White Coffee House." },
-      { property: "og:title", content: "Services — White Coffee House" },
-      { property: "og:description", content: "Dine-in, events, catering and a serene space to work." },
+      { title: "Services & Features — White Coffee House Restaurant" },
+      { name: "description", content: "Outdoor seating, takeaway & delivery, dine-in, great coffee & tea, desserts, laptop-friendly and reservations accepted." },
+      { property: "og:title", content: "Services & Features — White Coffee House" },
+      { property: "og:description", content: "Everything we offer at White Coffee House, Sidi Bou Said." },
     ],
   }),
   component: ServicesPage,
 });
 
 const services = [
-  { icon: Coffee, title: "Dine-In Experience", text: "Enjoy a serene Mediterranean atmosphere with attentive service from morning to midnight." },
-  { icon: Utensils, title: "Brunch & Lunch", text: "Daily fresh menus blending Tunisian flavors with continental favorites." },
-  { icon: Cake, title: "Private Events", text: "Birthdays, engagements, and celebrations hosted in our intimate dining room." },
-  { icon: Users, title: "Catering Service", text: "We bring our menu to your office, wedding or special gathering." },
-  { icon: Wifi, title: "Co-Working Friendly", text: "Fast Wi-Fi, quiet corners and endless coffee — perfect for a productive day." },
-  { icon: Music, title: "Live Music Nights", text: "Acoustic sets every Friday and Saturday from sunset to late." },
+  { icon: Sun, title: "Outdoor Seating", text: "A sunlit terrace with a glass canopy — enjoy the Tunisian sun all year round." },
+  { icon: ShoppingBag, title: "Takeaway & Delivery", text: "Your favorite plates and drinks, ready to go or delivered to your door." },
+  { icon: Utensils, title: "Dine-In", text: "Cozy booths, marble tables and a private dining room for an unforgettable meal." },
+  { icon: Coffee, title: "Coffee & Tea Selection", text: "An exceptional selection of single-origin coffees and Mediterranean teas." },
+  { icon: Cake, title: "Desserts", text: "House-made cakes, tiramisu, cheesecake and waffles crafted daily." },
+  { icon: Laptop, title: "Laptop-Friendly", text: "Fast Wi-Fi, quiet corners and endless coffee — perfect for a productive day." },
+  { icon: CalendarCheck, title: "Reservations Accepted", text: "Reserve your table in advance — call us at +216 52 873 835." },
 ];
 
 function ServicesPage() {
@@ -29,8 +38,8 @@ function ServicesPage() {
     <Layout>
       <PageHero
         eyebrow="What We Offer"
-        title="Services crafted around you"
-        subtitle="From a quick espresso on the run to a full-evening celebration — we're here to host you beautifully."
+        title="Services & Features"
+        subtitle="Everything thoughtfully prepared so your visit feels effortless from the first sip to the last bite."
       />
       <section className="mx-auto max-w-7xl px-6 py-20">
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">

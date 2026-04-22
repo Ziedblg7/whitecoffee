@@ -1,28 +1,90 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Layout } from "@/components/Layout";
 import { PageHero } from "@/components/PageHero";
-import { Star } from "lucide-react";
+import { Star, Award } from "lucide-react";
 
-const reviews = [
-  { name: "Leïla B.", role: "Tunis", rating: 5, text: "The most beautiful coffeehouse in Tunis. The mint tea, the marble tables, the light — pure poetry." },
-  { name: "Marco R.", role: "Visitor from Italy", rating: 5, text: "Their espresso rivals what I drink in Milan. And the avocado toast? Best I've had in North Africa." },
-  { name: "Sarra K.", role: "Food blogger", rating: 5, text: "An aesthetic dream. Every corner is photographable, but the food and service stand on their own." },
-  { name: "Yassine H.", role: "Local regular", rating: 5, text: "I come every Saturday morning for the Tunisian breakfast. It feels like home, but more elegant." },
-  { name: "Amélie D.", role: "Visitor from Paris", rating: 5, text: "A serene escape. The pastries are delicate, the staff warm. I left already missing it." },
-  { name: "Karim S.", role: "Architect", rating: 5, text: "The white-and-blue palette is executed with so much restraint. A masterclass in Mediterranean design." },
+interface Review {
+  name: string;
+  badge?: string;
+  meal: string;
+  price?: string;
+  rating: number;
+  text: string;
+  food: number;
+  service: number;
+  atmosphere: number;
+  extras?: string[];
+}
+
+const reviews: Review[] = [
+  {
+    name: "Meriem Mediouni",
+    meal: "Brunch",
+    rating: 5,
+    text: "Une belle expérience, un menu varié, les plats sont délicieux et joliment présentés mais surtout un service irréprochable et un cadre très calme comme d'habitude. Je recommande fortement surtout pour les brunchs.",
+    food: 5, service: 5, atmosphere: 5,
+    extras: [
+      "Noise level: Very quiet",
+      "Seating: Indoor · Outdoor terrace · Booth · Private dining room",
+    ],
+  },
+  {
+    name: "Guillermo Lopez Andres",
+    meal: "Lunch",
+    price: "TND 20–30",
+    rating: 5,
+    text: "Un très bel endroit où l'on se sent bien dès l'arrivée. La carte propose une grande variété de choix pour le petit-déjeuner, le déjeuner et le dîner, et on peut même y suivre les matchs de foot. L'équipe se distingue par sa gentillesse et son professionnalisme, avec une mention spéciale pour Ramzy, toujours attentif et souriant. L'atmosphère est cosy et chaleureuse, et la terrasse vitrée permet de rester au chaud tout en profitant du soleil pendant l'hiver tunisien. Une adresse que je recommande.",
+    food: 5, service: 5, atmosphere: 5,
+    extras: [
+      "Noise level: Quiet, easy to talk",
+      "Seating: Indoor · Outdoor terrace · Booth · Counter",
+      "Vegetarian options: Available",
+      "Parking: Plenty of parking",
+    ],
+  },
+  {
+    name: "Benoit Trojet",
+    badge: "Local Guide",
+    meal: "Brunch",
+    rating: 5,
+    text: "Un endroit incontournable pour un très bon brunch. Le service est impeccable et attentionné. Les prix sont corrects. Je recommande vivement cette adresse.",
+    food: 5, service: 5, atmosphere: 5,
+  },
+  {
+    name: "Hala Hadjab",
+    meal: "Brunch",
+    price: "TND 20–30",
+    rating: 5,
+    text: "Un lieu d'une grande douceur, où l'atmosphère chaleureuse vous accueille immédiatement. La carte, variée et bien pensée, convient aussi bien aux petits-déjeuners qu'aux dîners. L'équipe fait preuve d'un professionnalisme discret, et Hamdi se distingue par une attention délicate et un service impeccable. Les canapés, d'un confort rare, invitent à prolonger le moment. Une adresse que l'on retient volontiers.",
+    food: 5, service: 5, atmosphere: 5,
+    extras: [
+      "Reservations not required",
+      "Noise level: Quiet, easy to talk",
+    ],
+  },
 ];
 
 export const Route = createFileRoute("/reviews")({
   head: () => ({
     meta: [
       { title: "Reviews — White Coffee House Restaurant" },
-      { name: "description", content: "What our guests say about their experience at White Coffee House Restaurant." },
+      { name: "description", content: "What our guests say about their experience at White Coffee House Restaurant in Sidi Bou Said." },
       { property: "og:title", content: "Guest Reviews — White Coffee House" },
       { property: "og:description", content: "Stories and ratings from our beloved guests." },
     ],
   }),
   component: ReviewsPage,
 });
+
+function Stars({ n, size = 16 }: { n: number; size?: number }) {
+  return (
+    <div className="flex">
+      {Array.from({ length: n }).map((_, i) => (
+        <Star key={i} size={size} className="fill-accent text-accent" />
+      ))}
+    </div>
+  );
+}
 
 function ReviewsPage() {
   return (
@@ -33,26 +95,48 @@ function ReviewsPage() {
         subtitle="Real stories from the wonderful people who share our tables."
       />
       <section className="mx-auto max-w-7xl px-6 py-20">
-        <div className="mb-12 flex items-center justify-center gap-3">
-          <div className="flex">{Array.from({ length: 5 }).map((_, i) => <Star key={i} size={22} className="fill-accent text-accent" />)}</div>
-          <span className="font-display text-2xl text-primary">4.9 / 5</span>
-          <span className="text-sm text-muted-foreground">· 1,200+ reviews</span>
+        <div className="mb-14 flex flex-wrap items-center justify-center gap-3">
+          <Stars n={5} size={22} />
+          <span className="font-display text-2xl text-primary">5.0 / 5</span>
+          <span className="text-sm text-muted-foreground">· based on guest reviews</span>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-7 md:grid-cols-2">
           {reviews.map((r) => (
-            <div key={r.name} className="flex flex-col rounded-2xl border border-border/60 bg-card p-7 shadow-[var(--shadow-card)] transition-all hover:-translate-y-1 hover:shadow-[var(--shadow-elegant)]">
-              <div className="mb-4 flex">
-                {Array.from({ length: r.rating }).map((_, i) => (
-                  <Star key={i} size={16} className="fill-accent text-accent" />
-                ))}
+            <article key={r.name} className="flex flex-col rounded-3xl border border-border/60 bg-card p-7 shadow-[var(--shadow-card)] transition-all hover:-translate-y-1 hover:shadow-[var(--shadow-elegant)]">
+              <header className="flex items-start justify-between gap-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-display text-xl text-primary">{r.name}</h3>
+                    {r.badge && (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-primary-soft px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-primary">
+                        <Award size={10} /> {r.badge}
+                      </span>
+                    )}
+                  </div>
+                  <div className="mt-1 text-xs uppercase tracking-wider text-muted-foreground">
+                    {r.meal}{r.price ? ` · ${r.price}` : ""}
+                  </div>
+                </div>
+                <Stars n={r.rating} />
+              </header>
+
+              <p className="mt-5 italic text-foreground/80">"{r.text}"</p>
+
+              <div className="mt-6 flex flex-wrap gap-2 border-t border-border/60 pt-4 text-xs">
+                <span className="rounded-full bg-secondary px-3 py-1 text-secondary-foreground">Food: {r.food}</span>
+                <span className="rounded-full bg-secondary px-3 py-1 text-secondary-foreground">Service: {r.service}</span>
+                <span className="rounded-full bg-secondary px-3 py-1 text-secondary-foreground">Atmosphere: {r.atmosphere}</span>
               </div>
-              <p className="flex-1 italic text-foreground/80">"{r.text}"</p>
-              <div className="mt-6 border-t border-border/60 pt-4">
-                <div className="font-display text-lg text-primary">{r.name}</div>
-                <div className="text-xs uppercase tracking-wider text-muted-foreground">{r.role}</div>
-              </div>
-            </div>
+
+              {r.extras && (
+                <ul className="mt-4 space-y-1 text-xs text-muted-foreground">
+                  {r.extras.map((e) => (
+                    <li key={e}>· {e}</li>
+                  ))}
+                </ul>
+              )}
+            </article>
           ))}
         </div>
       </section>
