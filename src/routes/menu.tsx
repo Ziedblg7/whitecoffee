@@ -29,18 +29,23 @@ function MenuPage() {
       />
 
       {/* Quick category jump */}
-      <div className="sticky top-20 z-30 border-b border-border/60 bg-background/90 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl flex-wrap justify-center gap-2 px-4 py-3 md:justify-start md:px-6">
-          {menu.map((c) => (
-            <a
-              key={c.id}
-              href={`#${c.id}`}
-              className="flex min-h-11 items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-foreground/70 transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-            >
-              <span aria-hidden="true">{c.icon}</span>
-              <span className="whitespace-nowrap">{c.title}</span>
-            </a>
-          ))}
+      <div className="sticky top-16 z-30 border-b border-border/60 bg-background/90 backdrop-blur-xl md:top-20">
+        <div className="mx-auto max-w-7xl">
+          <div
+            className="flex gap-2 overflow-x-auto px-4 py-2.5 md:flex-wrap md:justify-start md:gap-2 md:overflow-x-visible md:px-6 md:py-3"
+            style={{ scrollbarWidth: "none" }}
+          >
+            {menu.map((c) => (
+              <a
+                key={c.id}
+                href={`#${c.id}`}
+                className="flex shrink-0 items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-foreground/70 transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background md:min-h-11 md:px-4 md:py-2 md:text-sm"
+              >
+                <span aria-hidden="true">{c.icon}</span>
+                <span className="whitespace-nowrap">{c.title}</span>
+              </a>
+            ))}
+          </div>
         </div>
       </div>
 
