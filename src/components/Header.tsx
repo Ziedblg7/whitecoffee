@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
-import logo from "@/assets/logo.png";
+import logo from "@/assets/logo-white.jpg";
 
 const links = [
   { to: "/", label: "Home" },
@@ -19,11 +19,7 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-background/80 backdrop-blur-xl">
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
         <Link to="/" className="flex items-center gap-3" onClick={() => setOpen(false)}>
-          <img src={logo} alt="White Coffee House" width={44} height={44} className="rounded-full" />
-          <div className="leading-tight">
-            <div className="font-display text-lg font-semibold text-primary">White Coffee House</div>
-            <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">Restaurant</div>
-          </div>
+          <img src={logo} alt="White Coffee House Restaurant" width={120} height={56} className="h-12 w-auto object-contain" />
         </Link>
 
         <nav className="hidden items-center gap-8 lg:flex">

@@ -1,26 +1,25 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Layout } from "@/components/Layout";
 import { PageHero } from "@/components/PageHero";
-import hero from "@/assets/hero.jpg";
-import about from "@/assets/about.jpg";
-import g1 from "@/assets/gallery1.jpg";
-import g2 from "@/assets/gallery2.jpg";
-import g3 from "@/assets/gallery3.jpg";
-import coffee from "@/assets/coffee.jpg";
-import desserts from "@/assets/desserts.jpg";
-import drinks from "@/assets/drinks.jpg";
-import breakfast from "@/assets/breakfast.jpg";
+import interior from "@/assets/interior-hero.jpg";
+import honey from "@/assets/photo-honey-pastry.jpg";
+import mintTea from "@/assets/photo-mint-tea.jpg";
+import pasta from "@/assets/photo-pasta.jpg";
+import frenchToast from "@/assets/photo-french-toast.jpg";
+import brunch from "@/assets/photo-brunch-spread.jpg";
+import iced from "@/assets/photo-iced-coffees.jpg";
+import bowls from "@/assets/photo-bowls.jpg";
 
 const images = [
-  { src: hero, alt: "Bright dining room", span: "md:col-span-2 md:row-span-2" },
-  { src: g1, alt: "Terrace at dusk", span: "" },
-  { src: coffee, alt: "Coffee flatlay", span: "" },
-  { src: about, alt: "Bougainvillea facade", span: "md:row-span-2" },
-  { src: g2, alt: "Barista pouring latte art", span: "" },
-  { src: desserts, alt: "Plated desserts", span: "" },
-  { src: drinks, alt: "Fresh drinks by the sea", span: "md:col-span-2" },
-  { src: breakfast, alt: "Brunch spread", span: "" },
-  { src: g3, alt: "Sea view dining room", span: "" },
+  { src: interior, alt: "White Coffee House interior with bougainvillea ceiling", span: "md:col-span-2 md:row-span-2" },
+  { src: honey, alt: "Honey poured over kunafa", span: "" },
+  { src: mintTea, alt: "Tunisian mint tea with pine nuts", span: "" },
+  { src: iced, alt: "Trio of iced coffees in Mediterranean alcove", span: "md:row-span-2" },
+  { src: frenchToast, alt: "French toast with berries", span: "" },
+  { src: pasta, alt: "Tagliatelle with seared steak", span: "" },
+  { src: brunch, alt: "Brunch spread with avocado toast and coffee", span: "md:col-span-2" },
+  { src: bowls, alt: "Trio of grain bowls", span: "" },
+  { src: honey, alt: "Sweet pastry detail", span: "" },
 ];
 
 export const Route = createFileRoute("/gallery")({
