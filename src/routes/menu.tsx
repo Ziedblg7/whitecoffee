@@ -279,16 +279,24 @@ function MenuPage() {
                   {cat.items.map((item) => (
                     <li
                       key={`${item.custom ? "c" : "d"}-${item.name}-${item.customIndex ?? ""}`}
-                      className="flex items-baseline gap-3 py-3"
+                      className="flex items-center gap-3 py-3"
                     >
+                      {item.image && (
+                        <img
+                          src={item.image}
+                          alt=""
+                          loading="lazy"
+                          className="h-10 w-10 shrink-0 rounded-lg object-cover ring-1 ring-border/60"
+                        />
+                      )}
                       <span className="flex-1 text-sm text-foreground md:text-base">{item.name}</span>
-                      <span className="hidden flex-1 translate-y-[-3px] border-b border-dotted border-border sm:block" />
+                      <span className="hidden flex-1 translate-y-[-3px] self-end border-b border-dotted border-border sm:block" />
                       <span className="shrink-0 text-right font-display text-base font-semibold text-primary md:text-lg">
                         {item.price}
                         <span className="ml-1 text-[10px] font-normal uppercase tracking-wider text-muted-foreground">TND</span>
                       </span>
                       {item.custom && item.customIndex !== undefined && (
-                        <span className="ml-1 flex shrink-0 items-center gap-1 self-center">
+                        <span className="ml-1 flex shrink-0 items-center gap-1">
                           <Button
                             type="button"
                             variant="ghost"
