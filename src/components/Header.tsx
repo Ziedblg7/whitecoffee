@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
-import logo from "@/assets/logo-white.png";
+import logo from "@/assets/logo-white.jpg";
 import { WhatsAppButton, WhatsAppIcon, whatsappUrl } from "./WhatsAppButton";
 
 const links = [
