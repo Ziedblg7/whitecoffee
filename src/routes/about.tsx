@@ -7,10 +7,10 @@ import gallery3 from "@/assets/gallery3.jpg";
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "About — White Coffee House Restaurant" },
-      { name: "description", content: "The story behind White Coffee House: a Mediterranean coffeehouse blending Tunisian warmth with Aegean elegance." },
+      { title: "About — White Coffee House Restaurant · Sidi Bou Said" },
+      { name: "description", content: "A refined and cozy dining experience in the heart of Sidi Bou Said — breakfast, lunch, brunch and dinner in a warm, trendy atmosphere." },
       { property: "og:title", content: "About White Coffee House" },
-      { property: "og:description", content: "A Mediterranean coffeehouse blending Tunisian warmth with Aegean elegance." },
+      { property: "og:description", content: "A refined and cozy dining experience in the heart of Sidi Bou Said." },
       { property: "og:image", content: aboutImg },
       { name: "twitter:image", content: aboutImg },
       { name: "twitter:card", content: "summary_large_image" },
@@ -25,22 +25,21 @@ function AboutPage() {
       <PageHero
         eyebrow="Our Story"
         title="A house built on light, sea & coffee"
-        subtitle="Inspired by the white villages of the Mediterranean, where time slows and conversations linger."
+        subtitle="A refined and cozy dining experience in the heart of Sidi Bou Said."
       />
       <section className="mx-auto max-w-7xl px-6 py-20">
         <div className="grid items-center gap-12 md:grid-cols-2">
-          <img src={aboutImg} alt="Mediterranean facade" width={1280} height={1024} loading="lazy" className="rounded-2xl shadow-[var(--shadow-elegant)]" />
+          <img src={aboutImg} alt="Mediterranean facade in Sidi Bou Said" width={1280} height={1024} loading="lazy" className="rounded-2xl shadow-[var(--shadow-elegant)]" />
           <div>
             <h2 className="font-display text-4xl text-primary">A Tunisian dream, dressed in white</h2>
             <p className="mt-5 text-muted-foreground">
-              White Coffee House was born from a simple desire: to create a place where the
-              Mediterranean light could pour into every cup. Our founders — passionate about
-              specialty coffee and Tunisian hospitality — set out to design a space that would feel
-              like a quiet morning in Sidi Bou Said.
+              White Coffee House Restaurant offers a refined and cozy dining experience in the heart
+              of Sidi Bou Said. From breakfast to dinner — including lunch and afternoon treats —
+              enjoy delicious moments with friends and family in a warm and trendy atmosphere.
             </p>
             <p className="mt-4 text-muted-foreground">
               Every detail, from the cobalt accents to the marble counters and the hand-glazed
-              ceramics, is a tribute to the timeless beauty of the sea.
+              ceramics, is a tribute to the timeless beauty of the Mediterranean.
             </p>
           </div>
         </div>
