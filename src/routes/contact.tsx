@@ -30,9 +30,9 @@ function ContactPage() {
           {/* Info */}
           <div className="space-y-6">
             {[
-              { icon: MapPin, title: "Find Us", text: "Avenue Habib Bourguiba, Tunis 1000, Tunisia" },
-              { icon: Phone, title: "Call Us", text: "+216 71 000 000" },
-              { icon: Mail, title: "Email", text: "hello@whitecoffeehouse.tn" },
+              { icon: MapPin, title: "Find Us", text: "Sidi Bou Said, Tunisia" },
+              { icon: Phone, title: "Call Us", text: "+216 52 873 835" },
+              { icon: Mail, title: "Email", text: "hello@whitesidibousaid.tn" },
               { icon: Clock, title: "Opening Hours", text: "Mon–Thu 7:00–23:00 · Fri–Sat 7:00–01:00 · Sun 8:00–23:00" },
             ].map(({ icon: Icon, title, text }) => (
               <div key={title} className="flex gap-5 rounded-2xl border border-border/60 bg-card p-6 shadow-[var(--shadow-card)]">
