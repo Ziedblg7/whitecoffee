@@ -397,6 +397,48 @@ function MenuPage() {
                 required
               />
             </div>
+            <div className="space-y-2">
+              <Label>Photo (optional)</Label>
+              <div className="flex items-center gap-3">
+                <div className="relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-dashed border-border bg-muted/40">
+                  {image ? (
+                    <>
+                      <img src={image} alt="" className="h-full w-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => setImage(undefined)}
+                        aria-label="Remove image"
+                        className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-background/90 text-foreground shadow ring-1 ring-border transition hover:text-destructive"
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </button>
+                    </>
+                  ) : (
+                    <ImagePlus className="h-6 w-6 text-muted-foreground" aria-hidden="true" />
+                  )}
+                </div>
+                <div className="flex-1">
+                  <Label
+                    htmlFor="item-image"
+                    className="inline-flex h-9 cursor-pointer items-center justify-center rounded-md border border-input bg-background px-3 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground"
+                  >
+                    {image ? "Change photo" : "Upload photo"}
+                  </Label>
+                  <Input
+                    id="item-image"
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (f) void handleImageFile(f);
+                      e.target.value = "";
+                    }}
+                  />
+                  <p className="mt-1 text-xs text-muted-foreground">PNG or JPG, up to 5 MB.</p>
+                </div>
+              </div>
+            </div>
             <DialogFooter className="gap-2 sm:gap-0">
               <Button type="button" variant="outline" onClick={() => setFormOpen(false)}>
                 Cancel
