@@ -177,24 +177,25 @@ function MenuPage() {
       return;
     }
 
+    const newItem: MenuItem = { name: trimmedName, price: parsedPrice, ...(image ? { image } : {}) };
     let next: CustomItems;
     if (editing) {
       // If category changed, remove from old then append to new
       if (editing.categoryId !== categoryId) {
         const oldList = [...(customItems[editing.categoryId] ?? [])];
         oldList.splice(editing.index, 1);
-        const newList = [...(customItems[categoryId] ?? []), { name: trimmedName, price: parsedPrice }];
+        const newList = [...(customItems[categoryId] ?? []), newItem];
         next = { ...customItems, [editing.categoryId]: oldList, [categoryId]: newList };
       } else {
         const list = [...(customItems[categoryId] ?? [])];
-        list[editing.index] = { name: trimmedName, price: parsedPrice };
+        list[editing.index] = newItem;
         next = { ...customItems, [categoryId]: list };
       }
       toast.success(`Updated "${trimmedName}".`);
     } else {
       next = {
         ...customItems,
-        [categoryId]: [...(customItems[categoryId] ?? []), { name: trimmedName, price: parsedPrice }],
+        [categoryId]: [...(customItems[categoryId] ?? []), newItem],
       };
       toast.success(`Added "${trimmedName}" to the menu.`);
     }
