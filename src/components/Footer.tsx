@@ -15,7 +15,7 @@ function TikTokIcon({ size = 16 }: { size?: number }) {
 }
 
 export function Footer() {
-  const siteUrl = typeof window !== "undefined" ? window.location.origin : "https://whitesidibousaid.tn";
+  const siteUrl = "https://whitesidibousaid.tn";
   return (
     <footer className="border-t border-border/60 bg-secondary/40">
       <div className="mx-auto grid max-w-7xl gap-10 px-6 py-16 md:grid-cols-2 lg:grid-cols-5">
