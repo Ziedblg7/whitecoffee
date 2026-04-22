@@ -67,7 +67,37 @@ function loadCustomItems(): CustomItems {
 
 function saveCustomItems(items: CustomItems) {
   if (typeof window === "undefined") return;
-  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+  try {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+  } catch {
+    toast.error("Storage is full. Try a smaller image.");
+  }
+}
+
+// Read a File, draw it to a canvas at maxSize on the long edge, return JPEG data URL.
+function resizeImageToDataUrl(file: File, maxSize = 480): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error("read error"));
+    reader.onload = () => {
+      const img = new Image();
+      img.onerror = () => reject(new Error("decode error"));
+      img.onload = () => {
+        const ratio = Math.min(1, maxSize / Math.max(img.width, img.height));
+        const w = Math.round(img.width * ratio);
+        const h = Math.round(img.height * ratio);
+        const canvas = document.createElement("canvas");
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return reject(new Error("no canvas"));
+        ctx.drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL("image/jpeg", 0.82));
+      };
+      img.src = reader.result as string;
+    };
+    reader.readAsDataURL(file);
+  });
 }
 
 type MergedItem = MenuItem & { custom: boolean; customIndex?: number };
