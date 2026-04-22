@@ -19,7 +19,7 @@ export const Route = createFileRoute("/")({
 
 function HomePage() {
   return (
-    <Layout fullscreen>
+    <Layout>
       <section className="relative h-[calc(100vh-5rem)] w-full overflow-hidden">
         <img
           src={heroImg}
