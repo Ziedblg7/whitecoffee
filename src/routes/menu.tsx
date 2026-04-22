@@ -1,7 +1,29 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { Plus } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { PageHero } from "@/components/PageHero";
-import { menu } from "@/data/menu";
+import { menu as defaultMenu, type MenuCategory, type MenuItem } from "@/data/menu";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { toast } from "sonner";
 import coffeeImg from "@/assets/photo-iced-coffees.jpg";
 
 export const Route = createFileRoute("/menu")({
@@ -19,7 +41,61 @@ export const Route = createFileRoute("/menu")({
   component: MenuPage,
 });
 
+const STORAGE_KEY = "wch:custom-menu-items";
+
+type CustomItems = Record<string, MenuItem[]>;
+
+function loadCustomItems(): CustomItems {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    return raw ? (JSON.parse(raw) as CustomItems) : {};
+  } catch {
+    return {};
+  }
+}
+
+function saveCustomItems(items: CustomItems) {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+}
+
 function MenuPage() {
+  const [customItems, setCustomItems] = useState<CustomItems>({});
+  const [open, setOpen] = useState(false);
+  const [categoryId, setCategoryId] = useState<string>(defaultMenu[0]?.id ?? "");
+  const [name, setName] = useState("");
+  const [price, setPrice] = useState("");
+
+  useEffect(() => {
+    setCustomItems(loadCustomItems());
+  }, []);
+
+  const mergedMenu: MenuCategory[] = defaultMenu.map((cat) => ({
+    ...cat,
+    items: [...cat.items, ...(customItems[cat.id] ?? [])],
+  }));
+
+  const handleAdd = (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmedName = name.trim();
+    const parsedPrice = parseFloat(price);
+    if (!trimmedName || Number.isNaN(parsedPrice) || parsedPrice < 0) {
+      toast.error("Please enter a valid name and price.");
+      return;
+    }
+    const next: CustomItems = {
+      ...customItems,
+      [categoryId]: [...(customItems[categoryId] ?? []), { name: trimmedName, price: parsedPrice }],
+    };
+    setCustomItems(next);
+    saveCustomItems(next);
+    toast.success(`Added "${trimmedName}" to the menu.`);
+    setName("");
+    setPrice("");
+    setOpen(false);
+  };
+
   return (
     <Layout>
       <PageHero
@@ -35,7 +111,7 @@ function MenuPage() {
             className="flex gap-2 overflow-x-auto px-4 py-2.5 md:flex-wrap md:justify-start md:gap-2 md:overflow-x-visible md:px-6 md:py-3"
             style={{ scrollbarWidth: "none" }}
           >
-            {menu.map((c) => (
+            {mergedMenu.map((c) => (
               <a
                 key={c.id}
                 href={`#${c.id}`}
@@ -52,7 +128,7 @@ function MenuPage() {
       {/* Full grid of categories */}
       <section className="mx-auto max-w-7xl px-6 py-16 md:py-20">
         <div className="grid gap-8 md:grid-cols-2">
-          {menu.map((cat) => (
+          {mergedMenu.map((cat) => (
             <article
               key={cat.id}
               id={cat.id}
@@ -95,6 +171,74 @@ function MenuPage() {
           ))}
         </div>
       </section>
+
+      {/* Floating "Add menu item" button */}
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+          <Button
+            size="lg"
+            className="fixed bottom-6 right-6 z-40 h-14 gap-2 rounded-full px-5 shadow-[var(--shadow-elegant)] md:bottom-8 md:right-8"
+          >
+            <Plus className="h-5 w-5" />
+            <span className="font-medium">Add item</span>
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Add a menu item</DialogTitle>
+            <DialogDescription>
+              Pick a category, then enter the item name and price (in TND).
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleAdd} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="category">Category</Label>
+              <Select value={categoryId} onValueChange={setCategoryId}>
+                <SelectTrigger id="category">
+                  <SelectValue placeholder="Choose a category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {defaultMenu.map((c) => (
+                    <SelectItem key={c.id} value={c.id}>
+                      {c.icon} {c.title}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="name">Item name</Label>
+              <Input
+                id="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="e.g. Matcha Latte"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="price">Price (TND)</Label>
+              <Input
+                id="price"
+                type="number"
+                inputMode="decimal"
+                step="0.5"
+                min="0"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                placeholder="e.g. 8.5"
+                required
+              />
+            </div>
+            <DialogFooter className="gap-2 sm:gap-0">
+              <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+                Cancel
+              </Button>
+              <Button type="submit">Add to menu</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 }
