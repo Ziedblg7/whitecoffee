@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Layout } from "@/components/Layout";
 import { menu } from "@/data/menu";
-import heroImg from "@/assets/hero.jpg";
+import heroImg from "@/assets/interior-hero.jpg";
 import aboutImg from "@/assets/about.jpg";
 import { Coffee, Leaf, Clock, Star } from "lucide-react";
 

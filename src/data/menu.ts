@@ -1,10 +1,10 @@
-import coffeeImg from "@/assets/coffee.jpg";
-import teaImg from "@/assets/tea.jpg";
-import breakfastImg from "@/assets/breakfast.jpg";
-import lunchImg from "@/assets/lunch.jpg";
-import dessertsImg from "@/assets/desserts.jpg";
-import drinksImg from "@/assets/drinks.jpg";
-import snacksImg from "@/assets/snacks.jpg";
+import coffeeImg from "@/assets/photo-iced-coffees.jpg";
+import teaImg from "@/assets/photo-mint-tea.jpg";
+import breakfastImg from "@/assets/photo-french-toast.jpg";
+import lunchImg from "@/assets/photo-bowls.jpg";
+import dessertsImg from "@/assets/photo-honey-pastry.jpg";
+import drinksImg from "@/assets/photo-brunch-spread.jpg";
+import snacksImg from "@/assets/photo-pasta.jpg";
 
 export interface MenuItem {
   name: string;
