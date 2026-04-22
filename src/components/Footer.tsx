@@ -1,8 +1,10 @@
 import { Link } from "@tanstack/react-router";
-import { Instagram, Mail, MapPin, Phone } from "lucide-react";
+import { Facebook, Instagram, Mail, MapPin, Phone } from "lucide-react";
+import { QRCodeSVG } from "qrcode.react";
 
 const TIKTOK_URL = "https://www.tiktok.com/@white_sidibousaid";
 const INSTAGRAM_URL = "https://www.instagram.com/white_sidibousaid";
+const FACEBOOK_URL = "https://www.facebook.com/share/1Dx9aCAD3V/?mibextid=wwXIfr";
 
 function TikTokIcon({ size = 16 }: { size?: number }) {
   return (
@@ -13,14 +15,20 @@ function TikTokIcon({ size = 16 }: { size?: number }) {
 }
 
 export function Footer() {
+  const siteUrl = typeof window !== "undefined" ? window.location.origin : "https://whitesidibousaid.tn";
   return (
     <footer className="border-t border-border/60 bg-secondary/40">
-      <div className="mx-auto grid max-w-7xl gap-10 px-6 py-16 md:grid-cols-4">
-        <div>
+      <div className="mx-auto grid max-w-7xl gap-10 px-6 py-16 md:grid-cols-2 lg:grid-cols-5">
+        <div className="lg:col-span-2">
           <div className="font-display text-2xl font-semibold text-primary">White Coffee House</div>
-          <p className="mt-3 text-sm text-muted-foreground">
+          <p className="mt-3 max-w-sm text-sm text-muted-foreground">
             A Mediterranean sanctuary of coffee, cuisine and calm in the heart of Sidi Bou Said.
           </p>
+          <div className="mt-5 flex gap-3">
+            <a href={INSTAGRAM_URL} target="_blank" rel="noreferrer" aria-label="Instagram" className="rounded-full border border-border p-2 text-primary transition-colors hover:bg-primary hover:text-primary-foreground"><Instagram size={16} /></a>
+            <a href={FACEBOOK_URL} target="_blank" rel="noreferrer" aria-label="Facebook" className="rounded-full border border-border p-2 text-primary transition-colors hover:bg-primary hover:text-primary-foreground"><Facebook size={16} /></a>
+            <a href={TIKTOK_URL} target="_blank" rel="noreferrer" aria-label="TikTok" className="rounded-full border border-border p-2 text-primary transition-colors hover:bg-primary hover:text-primary-foreground"><TikTokIcon size={16} /></a>
+          </div>
         </div>
         <div>
           <h4 className="text-sm font-semibold uppercase tracking-wider text-primary">Explore</h4>
@@ -40,15 +48,10 @@ export function Footer() {
           </ul>
         </div>
         <div>
-          <h4 className="text-sm font-semibold uppercase tracking-wider text-primary">Hours</h4>
-          <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-            <li>Mon – Thu · 7:00 – 23:00</li>
-            <li>Fri – Sat · 7:00 – 01:00</li>
-            <li>Sunday · 8:00 – 23:00</li>
-          </ul>
-          <div className="mt-5 flex gap-3">
-            <a href={INSTAGRAM_URL} target="_blank" rel="noreferrer" aria-label="Instagram" className="rounded-full border border-border p-2 text-primary transition-colors hover:bg-primary hover:text-primary-foreground"><Instagram size={16} /></a>
-            <a href={TIKTOK_URL} target="_blank" rel="noreferrer" aria-label="TikTok" className="rounded-full border border-border p-2 text-primary transition-colors hover:bg-primary hover:text-primary-foreground"><TikTokIcon size={16} /></a>
+          <h4 className="text-sm font-semibold uppercase tracking-wider text-primary">Scan & Visit</h4>
+          <div className="mt-4 inline-flex flex-col items-center rounded-2xl border border-border/60 bg-background p-3 shadow-[var(--shadow-card)]">
+            <QRCodeSVG value={siteUrl} size={104} bgColor="transparent" fgColor="hsl(var(--primary))" level="M" />
+            <span className="mt-2 text-[10px] uppercase tracking-wider text-muted-foreground">Visit our site</span>
           </div>
         </div>
       </div>

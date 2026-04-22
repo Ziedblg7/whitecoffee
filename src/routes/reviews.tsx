@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Layout } from "@/components/Layout";
 import { PageHero } from "@/components/PageHero";
-import { Star, Award } from "lucide-react";
+import { Star, Award, ThumbsUp } from "lucide-react";
 
 interface Review {
   name: string;
