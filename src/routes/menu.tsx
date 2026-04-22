@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Plus } from "lucide-react";
+import { Pencil, Plus, Trash2 } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { PageHero } from "@/components/PageHero";
 import { menu as defaultMenu, type MenuCategory, type MenuItem } from "@/data/menu";
@@ -14,6 +14,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -60,23 +70,55 @@ function saveCustomItems(items: CustomItems) {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
 }
 
+type MergedItem = MenuItem & { custom: boolean; customIndex?: number };
+type MergedCategory = Omit<MenuCategory, "items"> & { items: MergedItem[] };
+
 function MenuPage() {
   const [customItems, setCustomItems] = useState<CustomItems>({});
-  const [open, setOpen] = useState(false);
+  const [formOpen, setFormOpen] = useState(false);
   const [categoryId, setCategoryId] = useState<string>(defaultMenu[0]?.id ?? "");
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
+  // When editing, track which custom item we're editing
+  const [editing, setEditing] = useState<{ categoryId: string; index: number } | null>(null);
+  // Pending deletion confirmation
+  const [deleting, setDeleting] = useState<{ categoryId: string; index: number; name: string } | null>(null);
 
   useEffect(() => {
     setCustomItems(loadCustomItems());
   }, []);
 
-  const mergedMenu: MenuCategory[] = defaultMenu.map((cat) => ({
+  const mergedMenu: MergedCategory[] = defaultMenu.map((cat) => ({
     ...cat,
-    items: [...cat.items, ...(customItems[cat.id] ?? [])],
+    items: [
+      ...cat.items.map((i) => ({ ...i, custom: false })),
+      ...(customItems[cat.id] ?? []).map((i, idx) => ({ ...i, custom: true, customIndex: idx })),
+    ],
   }));
 
-  const handleAdd = (e: React.FormEvent) => {
+  const resetForm = () => {
+    setName("");
+    setPrice("");
+    setEditing(null);
+    setCategoryId(defaultMenu[0]?.id ?? "");
+  };
+
+  const openAdd = () => {
+    resetForm();
+    setFormOpen(true);
+  };
+
+  const openEdit = (catId: string, index: number) => {
+    const item = customItems[catId]?.[index];
+    if (!item) return;
+    setEditing({ categoryId: catId, index });
+    setCategoryId(catId);
+    setName(item.name);
+    setPrice(String(item.price));
+    setFormOpen(true);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const trimmedName = name.trim();
     const parsedPrice = parseFloat(price);
@@ -84,16 +126,44 @@ function MenuPage() {
       toast.error("Please enter a valid name and price.");
       return;
     }
-    const next: CustomItems = {
-      ...customItems,
-      [categoryId]: [...(customItems[categoryId] ?? []), { name: trimmedName, price: parsedPrice }],
-    };
+
+    let next: CustomItems;
+    if (editing) {
+      // If category changed, remove from old then append to new
+      if (editing.categoryId !== categoryId) {
+        const oldList = [...(customItems[editing.categoryId] ?? [])];
+        oldList.splice(editing.index, 1);
+        const newList = [...(customItems[categoryId] ?? []), { name: trimmedName, price: parsedPrice }];
+        next = { ...customItems, [editing.categoryId]: oldList, [categoryId]: newList };
+      } else {
+        const list = [...(customItems[categoryId] ?? [])];
+        list[editing.index] = { name: trimmedName, price: parsedPrice };
+        next = { ...customItems, [categoryId]: list };
+      }
+      toast.success(`Updated "${trimmedName}".`);
+    } else {
+      next = {
+        ...customItems,
+        [categoryId]: [...(customItems[categoryId] ?? []), { name: trimmedName, price: parsedPrice }],
+      };
+      toast.success(`Added "${trimmedName}" to the menu.`);
+    }
+
     setCustomItems(next);
     saveCustomItems(next);
-    toast.success(`Added "${trimmedName}" to the menu.`);
-    setName("");
-    setPrice("");
-    setOpen(false);
+    setFormOpen(false);
+    resetForm();
+  };
+
+  const confirmDelete = () => {
+    if (!deleting) return;
+    const list = [...(customItems[deleting.categoryId] ?? [])];
+    list.splice(deleting.index, 1);
+    const next = { ...customItems, [deleting.categoryId]: list };
+    setCustomItems(next);
+    saveCustomItems(next);
+    toast.success(`Removed "${deleting.name}".`);
+    setDeleting(null);
   };
 
   return (
@@ -156,13 +226,42 @@ function MenuPage() {
 
                 <ul className="divide-y divide-border/50">
                   {cat.items.map((item) => (
-                    <li key={item.name} className="flex items-baseline gap-3 py-3">
+                    <li
+                      key={`${item.custom ? "c" : "d"}-${item.name}-${item.customIndex ?? ""}`}
+                      className="flex items-baseline gap-3 py-3"
+                    >
                       <span className="flex-1 text-sm text-foreground md:text-base">{item.name}</span>
                       <span className="hidden flex-1 translate-y-[-3px] border-b border-dotted border-border sm:block" />
                       <span className="shrink-0 text-right font-display text-base font-semibold text-primary md:text-lg">
                         {item.price}
                         <span className="ml-1 text-[10px] font-normal uppercase tracking-wider text-muted-foreground">TND</span>
                       </span>
+                      {item.custom && item.customIndex !== undefined && (
+                        <span className="ml-1 flex shrink-0 items-center gap-1 self-center">
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-muted-foreground hover:text-primary"
+                            onClick={() => openEdit(cat.id, item.customIndex!)}
+                            aria-label={`Edit ${item.name}`}
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                            onClick={() =>
+                              setDeleting({ categoryId: cat.id, index: item.customIndex!, name: item.name })
+                            }
+                            aria-label={`Delete ${item.name}`}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </span>
+                      )}
                     </li>
                   ))}
                 </ul>
@@ -173,10 +272,17 @@ function MenuPage() {
       </section>
 
       {/* Floating "Add menu item" button */}
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog
+        open={formOpen}
+        onOpenChange={(o) => {
+          setFormOpen(o);
+          if (!o) resetForm();
+        }}
+      >
         <DialogTrigger asChild>
           <Button
             size="lg"
+            onClick={openAdd}
             className="fixed bottom-6 right-6 z-40 h-14 gap-2 rounded-full px-5 shadow-[var(--shadow-elegant)] md:bottom-8 md:right-8"
           >
             <Plus className="h-5 w-5" />
@@ -185,12 +291,14 @@ function MenuPage() {
         </DialogTrigger>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Add a menu item</DialogTitle>
+            <DialogTitle>{editing ? "Edit menu item" : "Add a menu item"}</DialogTitle>
             <DialogDescription>
-              Pick a category, then enter the item name and price (in TND).
+              {editing
+                ? "Update the category, name, or price of this item."
+                : "Pick a category, then enter the item name and price (in TND)."}
             </DialogDescription>
           </DialogHeader>
-          <form onSubmit={handleAdd} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="category">Category</Label>
               <Select value={categoryId} onValueChange={setCategoryId}>
@@ -231,14 +339,30 @@ function MenuPage() {
               />
             </div>
             <DialogFooter className="gap-2 sm:gap-0">
-              <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+              <Button type="button" variant="outline" onClick={() => setFormOpen(false)}>
                 Cancel
               </Button>
-              <Button type="submit">Add to menu</Button>
+              <Button type="submit">{editing ? "Save changes" : "Add to menu"}</Button>
             </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* Delete confirmation */}
+      <AlertDialog open={!!deleting} onOpenChange={(o) => !o && setDeleting(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove this item?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {deleting ? `"${deleting.name}" will be removed from the menu.` : ""}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete}>Delete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Layout>
   );
 }
