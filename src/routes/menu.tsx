@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { ImagePlus, Pencil, Plus, Trash2, X } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { PageHero } from "@/components/PageHero";
 import { menu as defaultMenu, type MenuCategory, type MenuItem } from "@/data/menu";
@@ -79,6 +79,7 @@ function MenuPage() {
   const [categoryId, setCategoryId] = useState<string>(defaultMenu[0]?.id ?? "");
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
+  const [image, setImage] = useState<string | undefined>(undefined);
   // When editing, track which custom item we're editing
   const [editing, setEditing] = useState<{ categoryId: string; index: number } | null>(null);
   // Pending deletion confirmation
@@ -99,8 +100,26 @@ function MenuPage() {
   const resetForm = () => {
     setName("");
     setPrice("");
+    setImage(undefined);
     setEditing(null);
     setCategoryId(defaultMenu[0]?.id ?? "");
+  };
+
+  const handleImageFile = async (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please pick an image file.");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image must be under 5 MB.");
+      return;
+    }
+    try {
+      const dataUrl = await resizeImageToDataUrl(file, 480);
+      setImage(dataUrl);
+    } catch {
+      toast.error("Couldn't read that image.");
+    }
   };
 
   const openAdd = () => {
@@ -115,6 +134,7 @@ function MenuPage() {
     setCategoryId(catId);
     setName(item.name);
     setPrice(String(item.price));
+    setImage(item.image);
     setFormOpen(true);
   };
 
